@@ -18,8 +18,10 @@ public enum Country {
      * @return строка с названиями стран
      */
     public static String names() {
-        return Arrays.stream(values())
-                .map(Enum::name)
-                .collect(Collectors.joining(", "));
+        StringBuilder nameList = new StringBuilder();
+        for (Country country : values()) {
+            nameList.append(country.name()).append(", ");
+        }
+        return nameList.substring(0, nameList.length() - 2);
     }
 }

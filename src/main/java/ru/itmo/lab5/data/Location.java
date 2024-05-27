@@ -37,20 +37,6 @@ public class Location implements Validateable {
     }
 
     /**
-     * Переопределение метода toString.
-     *
-     * @return строковое представление объекта Location
-     */
-    @Override
-    public String toString() {
-        return "Location{" +
-                "x=" + x +
-                ", y=" + y +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
-    /**
      * Переопределение методов equals и hashCode.
      */
     @Override
@@ -65,7 +51,19 @@ public class Location implements Validateable {
     public int hashCode() {
         return Objects.hash(x, y, name);
     }
-
+    /**
+     * Переопределение метода toString.
+     *
+     * @return строковое представление объекта Location
+     */
+    @Override
+    public String toString() {
+        return "Location{" +
+                "x=" + x +
+                ", y=" + y +
+                ", name='" + name + '\'' +
+                '}';
+    }
     /**
      * Конструктор, принимающий строку вида "x ; y ; name".
      *
@@ -73,15 +71,102 @@ public class Location implements Validateable {
      * @throws IllegalArgumentException если строка не соответствует ожидаемому формату
      */
     public Location(String s) {
-        String[] parts = s.split(" ; ");
-        // Проверяем размер массива parts
-        if (parts.length == 3) {
-            // Если размер массива равен 3, разбираем строки в переменные
-            this.x = parts[0].equals("null") ? -1 : Long.parseLong(parts[0]);
-            this.y = parts[1].equals("null") ? 0 : Integer.parseInt(parts[1]);
-            this.name = parts[2];
-        } else {
-            throw new IllegalArgumentException("Некорректный формат строки для создания объекта Location");
+        if (s == null || s.trim().isEmpty()) {
+            throw new IllegalArgumentException("Строка для создания объекта Location не может быть null или пустой");
+        }
+
+        try {
+            String[] parts = s.split(" ; ");
+
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Некорректный формат строки для создания объекта Location: ожидалось 3 части, получено " + parts.length);
+            }
+
+            long x;
+            int y;
+            String name;
+
+            try {
+                x = parts[0].equals("null") ? -1 : Long.parseLong(parts[0].trim());
+                if (x < 0 && !parts[0].equals("null")) {
+                    throw new IllegalArgumentException("Значение x должно быть неотрицательным или равным null");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Некорректное значение для x: " + parts[0]);
+            }
+
+            try {
+                y = parts[1].equals("null") ? 0 : Integer.parseInt(parts[1].trim());
+                if (y < 0 && !parts[1].equals("null")) {
+                    throw new IllegalArgumentException("Значение y должно быть неотрицательным или равным null");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Некорректное значение для y: " + parts[1]);
+            }
+
+            name = parts[2].trim();
+            if (name.isEmpty()) {
+                throw new IllegalArgumentException("Название местоположения не может быть пустым");
+            }
+
+            this.x = x;
+            this.y = y;
+            this.name = name;
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ошибка при создании объекта Location из строки: " + s, e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Неизвестная ошибка при парсинге строки в объект Location", e);
         }
     }
+
+    public static Location fromString(String s) {
+        if (s == null || s.trim().isEmpty()) {
+            throw new IllegalArgumentException("Строка для парсинга Location не может быть null или пустой");
+        }
+
+        try {
+            String[] parts = s.split(" ; ");
+
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Некорректный формат строки для создания объекта Location: ожидалось 3 части, получено " + parts.length);
+            }
+
+            long x;
+            int y;
+            String name;
+
+            try {
+                x = parts[0].equals("null") ? -1 : Long.parseLong(parts[0].trim());
+                if (x < 0 && !parts[0].equals("null")) {
+                    throw new IllegalArgumentException("Значение x должно быть неотрицательным или равным null");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Некорректное значение для x: " + parts[0]);
+            }
+
+            try {
+                y = parts[1].equals("null") ? 0 : Integer.parseInt(parts[1].trim());
+                if (y < 0 && !parts[1].equals("null")) {
+                    throw new IllegalArgumentException("Значение y должно быть неотрицательным или равным null");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Некорректное значение для y: " + parts[1]);
+            }
+
+            name = parts[2].trim();
+            if (name.isEmpty()) {
+                throw new IllegalArgumentException("Название местоположения не может быть пустым");
+            }
+
+            return new Location(x, y, name);
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ошибка при создании объекта Location из строки: " + s, e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Неизвестная ошибка при парсинге строки в объект Location", e);
+        }
+    }
+
+
 }

@@ -17,8 +17,10 @@ public enum UnitOfMeasure {
      * @return строка с названиями единиц измерения
      */
     public static String names() {
-        return Arrays.stream(values())
-                .map(Enum::name)
-                .collect(Collectors.joining(", "));
+        StringBuilder nameList = new StringBuilder();
+        for (UnitOfMeasure unitOfMeasure: values()) {
+            nameList.append(unitOfMeasure.name()).append(", ");
+        }
+        return nameList.substring(0, nameList.length() - 2);
     }
 }

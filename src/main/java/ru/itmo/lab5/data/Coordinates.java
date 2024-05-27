@@ -4,6 +4,7 @@ import ru.itmo.lab5.utility.Validateable;
 
 import java.util.Objects;
 
+
 /**
  * Класс, представляющий координаты.
  */
@@ -62,29 +63,43 @@ public class Coordinates implements Validateable {
         return Objects.hash(x, y);
     }
 
-    /**
-     * Создает объект Coordinates из строки.
-     *
-     * @param coordinatesString строка с координатами
-     * @return объект Coordinates
-     * @throws IllegalArgumentException если строка не соответствует ожидаемому формату
-     */
-    public static Coordinates fromString(String coordinatesString) {
-        if (coordinatesString == null) {
-            return null;
-        }
-
-        String[] parts = coordinatesString.split(",");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid coordinates string format: " + coordinatesString);
-        }
-
+    public static Coordinates fromString(String s) {
         try {
-            Integer x = Integer.parseInt(parts[0]);
-            Double y = Double.parseDouble(parts[1]);
+            // Ищем подстроку "Coordinates"
+            int startIndex = s.indexOf("Coordinates");
+            if (startIndex == -1) {
+                throw new IllegalArgumentException("Неверный формат строки для Coordinates");
+            }
+
+            // Получаем подстроку, содержащую координаты
+            String coordSubstr = s.substring(startIndex);
+
+            // Ищем индексы начала и конца блока координат
+            int startIndexX = coordSubstr.indexOf("x=");
+            int endIndexX = coordSubstr.indexOf(",", startIndexX);
+
+            int startIndexY = coordSubstr.indexOf("y=");
+            int endIndexY = coordSubstr.indexOf("}", startIndexY);
+
+            // Извлекаем значения координат
+            Integer x = Integer.parseInt(coordSubstr.substring(startIndexX + 2, endIndexX));
+            Double y = Double.parseDouble(coordSubstr.substring(startIndexY + 2, endIndexY));
+
+            if (x <= -454) {
+                throw new IllegalArgumentException("Неверное значение для x: " + x);
+            }
+
+            if (y == null) {
+                throw new IllegalArgumentException("Неверное значение для y");
+            }
+
             return new Coordinates(x, y);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid coordinates values: " + coordinatesString);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Ошибка преобразования строки в объект Coordinates", e);
         }
     }
+
+
+
+
 }
